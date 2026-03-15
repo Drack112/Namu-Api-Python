@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: namu
+          POSTGRES_PASSWORD: namu123
+          POSTGRES_DB: namu_ai_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint
+        run: ruff check app/ tests/
+
+      - name: Format check
+        run: black --check app/ tests/
+
+      - name: Test
+        env:
+          APP_ENV: development
+          TEST_DB_URL: postgresql+asyncpg://namu:namu123@localhost:5432/namu_ai_test
+          LLM_PROVIDER: anthropic
+          LLM_API_KEY: test-key-not-used-in-tests
+          LLM_MODEL: claude-haiku-4-5-20251001
+          ALLOW_ORIGINS: http://localhost:3000
+          ALLOW_HEADERS: Content-Type,Authorization
+        run: pytest tests/ -v --tb=short
