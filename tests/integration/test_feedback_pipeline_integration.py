@@ -62,12 +62,6 @@ async def test_returns_none_for_user_with_no_feedback(db_session):
     assert ctx is None
 
 
-async def test_returns_none_for_user_with_no_recommendations(db_session):
-    user = await _make_user(db_session)
-    ctx = await build_feedback_context(user.id, db_session)
-    assert ctx is None
-
-
 async def test_preferred_categories_appear_after_positive_feedback(db_session):
     user = await _make_user(db_session)
     rec1 = await _make_recommendation(db_session, user.id, _MOCK_LLM)
@@ -108,7 +102,7 @@ async def test_category_needs_min_two_samples_to_be_preferred(db_session):
     assert "pilates" not in ctx["preferred_categories"]
 
 
-async def test_avg_rating_reflects_real_values(db_session):
+async def test_avg_rating_and_total_feedbacks(db_session):
     user = await _make_user(db_session)
     rec1 = await _make_recommendation(db_session, user.id, _MOCK_LLM)
     rec2 = await _make_recommendation(db_session, user.id, _MOCK_LLM)

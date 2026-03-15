@@ -1,6 +1,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
+import pytest
 
 from app.infra.webhook import notify_feedback_submitted, notify_recommendation_created
 
@@ -22,97 +23,54 @@ def _patch_settings(url: str):
     return patch("app.infra.webhook.get_settings", return_value=mock)
 
 
-async def test_no_op_when_webhook_url_empty():
+@pytest.mark.parametrize(
+    "func,args",
+    [
+        (notify_recommendation_created, (1, 2)),
+        (notify_feedback_submitted, (1, 1, 5)),
+    ],
+)
+async def test_no_op_when_webhook_url_empty(func, args):
     with _patch_settings(""), patch("app.infra.webhook.httpx.AsyncClient") as cls:
-        await notify_recommendation_created(1, 2)
+        await func(*args)
     cls.assert_not_called()
 
 
-async def test_no_op_feedback_when_webhook_url_empty():
-    with _patch_settings(""), patch("app.infra.webhook.httpx.AsyncClient") as cls:
-        await notify_feedback_submitted(1, 1, 5)
-    cls.assert_not_called()
-
-
-async def test_recommendation_created_event_name():
-    cm, client = _mock_client()
-    with (
-        _patch_settings("http://hook.test/events"),
-        patch("app.infra.webhook.httpx.AsyncClient", return_value=cm),
-    ):
-        await notify_recommendation_created(42, 7)
-    assert client.post.call_args.kwargs["json"]["event"] == "recommendation.created"
-
-
-async def test_recommendation_created_data_fields():
-    cm, client = _mock_client()
-    with (
-        _patch_settings("http://hook.test/events"),
-        patch("app.infra.webhook.httpx.AsyncClient", return_value=cm),
-    ):
-        await notify_recommendation_created(42, 7)
-    data = client.post.call_args.kwargs["json"]["data"]
-    assert data["recommendation_id"] == 42
-    assert data["user_id"] == 7
-
-
-async def test_recommendation_created_has_timestamp():
-    cm, client = _mock_client()
-    with (
-        _patch_settings("http://hook.test/events"),
-        patch("app.infra.webhook.httpx.AsyncClient", return_value=cm),
-    ):
-        await notify_recommendation_created(1, 1)
-    assert "timestamp" in client.post.call_args.kwargs["json"]
-
-
-async def test_recommendation_created_posts_to_configured_url():
+async def test_recommendation_created_posts_correct_payload():
     cm, client = _mock_client()
     url = "http://hook.test/events"
     with _patch_settings(url), patch("app.infra.webhook.httpx.AsyncClient", return_value=cm):
-        await notify_recommendation_created(1, 1)
+        await notify_recommendation_created(42, 7)
     client.post.assert_awaited_once()
     assert client.post.call_args.args[0] == url
+    payload = client.post.call_args.kwargs["json"]
+    assert payload["event"] == "recommendation.created"
+    assert "timestamp" in payload
+    assert payload["data"]["recommendation_id"] == 42
+    assert payload["data"]["user_id"] == 7
 
 
-async def test_feedback_submitted_event_name():
+async def test_feedback_submitted_posts_correct_payload():
     cm, client = _mock_client()
-    with (
-        _patch_settings("http://hook.test/events"),
-        patch("app.infra.webhook.httpx.AsyncClient", return_value=cm),
+    with _patch_settings("http://hook.test/events"), patch(
+        "app.infra.webhook.httpx.AsyncClient", return_value=cm
     ):
         await notify_feedback_submitted(10, 42, 5)
-    assert client.post.call_args.kwargs["json"]["event"] == "feedback.submitted"
+    payload = client.post.call_args.kwargs["json"]
+    assert payload["event"] == "feedback.submitted"
+    assert payload["data"]["feedback_id"] == 10
+    assert payload["data"]["recommendation_id"] == 42
+    assert payload["data"]["rating"] == 5
 
 
-async def test_feedback_submitted_data_fields():
+@pytest.mark.parametrize(
+    "exc",
+    [Exception("connection refused"), httpx.TimeoutException("timed out")],
+)
+async def test_errors_are_swallowed(exc):
     cm, client = _mock_client()
-    with (
-        _patch_settings("http://hook.test/events"),
-        patch("app.infra.webhook.httpx.AsyncClient", return_value=cm),
-    ):
-        await notify_feedback_submitted(10, 42, 5)
-    data = client.post.call_args.kwargs["json"]["data"]
-    assert data["feedback_id"] == 10
-    assert data["recommendation_id"] == 42
-    assert data["rating"] == 5
-
-
-async def test_network_error_is_swallowed():
-    cm, client = _mock_client()
-    client.post.side_effect = Exception("connection refused")
-    with (
-        _patch_settings("http://hook.test/events"),
-        patch("app.infra.webhook.httpx.AsyncClient", return_value=cm),
+    client.post.side_effect = exc
+    with _patch_settings("http://hook.test/events"), patch(
+        "app.infra.webhook.httpx.AsyncClient", return_value=cm
     ):
         await notify_recommendation_created(1, 1)  # must not raise
-
-
-async def test_timeout_is_swallowed():
-    cm, client = _mock_client()
-    client.post.side_effect = httpx.TimeoutException("timed out")
-    with (
-        _patch_settings("http://hook.test/events"),
-        patch("app.infra.webhook.httpx.AsyncClient", return_value=cm),
-    ):
-        await notify_feedback_submitted(1, 1, 3)  # must not raise

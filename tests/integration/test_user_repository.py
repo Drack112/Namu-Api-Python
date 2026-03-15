@@ -9,7 +9,7 @@ _USER_DATA = {
 }
 
 
-async def test_create_returns_user_with_id(db_session):
+async def test_create_user(db_session):
     repo = UserRepository(db_session)
     user = await repo.create(_USER_DATA)
 
@@ -19,11 +19,6 @@ async def test_create_returns_user_with_id(db_session):
     assert user.goals == ["ganhar massa"]
     assert user.restrictions is None
     assert user.experience_level == "iniciante"
-
-
-async def test_create_assigns_created_at(db_session):
-    repo = UserRepository(db_session)
-    user = await repo.create(_USER_DATA)
     assert user.created_at is not None
 
 
@@ -52,14 +47,12 @@ async def test_create_multiple_users_get_different_ids(db_session):
 
 async def test_create_user_with_restrictions(db_session):
     repo = UserRepository(db_session)
-    data = {**_USER_DATA, "restrictions": "Problemas no joelho"}
-    user = await repo.create(data)
+    user = await repo.create({**_USER_DATA, "restrictions": "Problemas no joelho"})
     assert user.restrictions == "Problemas no joelho"
 
 
 async def test_create_user_with_multiple_goals(db_session):
     repo = UserRepository(db_session)
-    data = {**_USER_DATA, "goals": ["perder peso", "melhorar sono", "reduzir estresse"]}
-    user = await repo.create(data)
+    user = await repo.create({**_USER_DATA, "goals": ["perder peso", "melhorar sono", "reduzir estresse"]})
     assert len(user.goals) == 3
     assert "perder peso" in user.goals

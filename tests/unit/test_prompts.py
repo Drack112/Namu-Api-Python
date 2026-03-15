@@ -1,6 +1,8 @@
 import json
 from types import SimpleNamespace
 
+import pytest
+
 from app.infra.llm.prompts import _FALLBACK_RESPONSE, build_user_prompt, parse_llm_response
 
 
@@ -9,16 +11,13 @@ def test_parse_clean_json():
     assert parse_llm_response(json.dumps(payload)) == payload
 
 
-def test_parse_json_in_markdown_fence():
+@pytest.mark.parametrize(
+    "raw_fmt",
+    ["```json\n{body}\n```", "```\n{body}\n```"],
+)
+def test_parse_json_in_fence(raw_fmt):
     payload = {"activities": [], "reasoning": "ok", "precautions": []}
-    raw = f"```json\n{json.dumps(payload)}\n```"
-    assert parse_llm_response(raw) == payload
-
-
-def test_parse_json_in_plain_fence():
-    payload = {"activities": [], "reasoning": "ok", "precautions": []}
-    raw = f"```\n{json.dumps(payload)}\n```"
-    assert parse_llm_response(raw) == payload
+    assert parse_llm_response(raw_fmt.format(body=json.dumps(payload))) == payload
 
 
 def test_parse_json_embedded_in_prose():
@@ -27,15 +26,12 @@ def test_parse_json_embedded_in_prose():
     assert parse_llm_response(raw) == payload
 
 
-def test_parse_invalid_json_returns_fallback():
-    result = parse_llm_response("this is not json at all")
-    assert result["activities"] == _FALLBACK_RESPONSE["activities"]
-    assert "precautions" in result
-
-
-def test_parse_broken_fence_returns_fallback():
-    result = parse_llm_response("```json\n{ broken json\n```")
-    assert result == _FALLBACK_RESPONSE
+@pytest.mark.parametrize(
+    "raw",
+    ["this is not json at all", "```json\n{ broken json\n```"],
+)
+def test_parse_invalid_json_returns_fallback(raw):
+    assert parse_llm_response(raw) == _FALLBACK_RESPONSE
 
 
 def test_parse_returns_copy_of_fallback():
@@ -95,33 +91,27 @@ def test_build_user_prompt_multiple_goals():
     assert "melhorar sono" in prompt
 
 
-def test_build_user_prompt_with_feedback_context_includes_preferences():
+def test_build_user_prompt_with_feedback_context():
     user = _make_user()
-    ctx = {"preferred_categories": ["yoga", "meditação"], "avg_rating": 4.5, "total_feedbacks": 3}
+    ctx = {"preferred_categories": ["yoga", "meditação"], "avg_rating": 4.5, "total_feedbacks": 5}
     prompt = build_user_prompt(user, context=None, feedback_context=ctx)
     assert "PREFERÊNCIAS HISTÓRICAS" in prompt
     assert "yoga" in prompt
     assert "meditação" in prompt
-
-
-def test_build_user_prompt_feedback_context_shows_avg_and_total():
-    user = _make_user()
-    ctx = {"preferred_categories": ["pilates"], "avg_rating": 4.2, "total_feedbacks": 5}
-    prompt = build_user_prompt(user, context=None, feedback_context=ctx)
-    assert "4.2" in prompt
+    assert "4.5" in prompt
     assert "5" in prompt
 
 
-def test_build_user_prompt_no_section_when_feedback_context_none():
+@pytest.mark.parametrize(
+    "feedback_context",
+    [
+        None,
+        {"preferred_categories": [], "avg_rating": 3.0, "total_feedbacks": 2},
+    ],
+)
+def test_build_user_prompt_no_feedback_section(feedback_context):
     user = _make_user()
-    prompt = build_user_prompt(user, context=None, feedback_context=None)
-    assert "PREFERÊNCIAS HISTÓRICAS" not in prompt
-
-
-def test_build_user_prompt_no_section_when_preferred_categories_empty():
-    user = _make_user()
-    ctx = {"preferred_categories": [], "avg_rating": 3.0, "total_feedbacks": 2}
-    prompt = build_user_prompt(user, context=None, feedback_context=ctx)
+    prompt = build_user_prompt(user, context=None, feedback_context=feedback_context)
     assert "PREFERÊNCIAS HISTÓRICAS" not in prompt
 
 

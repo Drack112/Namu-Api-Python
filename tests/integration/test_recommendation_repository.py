@@ -19,11 +19,9 @@ async def _create_user(session):
     return await UserRepository(session).create(_USER_DATA)
 
 
-async def test_create_recommendation_returns_id(db_session):
+async def test_create_recommendation(db_session):
     user = await _create_user(db_session)
-    repo = RecommendationRepository(db_session)
-
-    rec = await repo.create(
+    rec = await RecommendationRepository(db_session).create(
         {
             "user_id": user.id,
             "context": None,
@@ -32,27 +30,10 @@ async def test_create_recommendation_returns_id(db_session):
             "precautions": [],
         }
     )
-
     assert rec.id is not None
     assert rec.user_id == user.id
     assert rec.activities == _ACTIVITIES
     assert rec.reasoning == "Adequado ao nível."
-
-
-async def test_create_recommendation_feedback_is_none_initially(db_session):
-    user = await _create_user(db_session)
-    repo = RecommendationRepository(db_session)
-
-    rec = await repo.create(
-        {
-            "user_id": user.id,
-            "context": None,
-            "activities": _ACTIVITIES,
-            "reasoning": "ok",
-            "precautions": [],
-        }
-    )
-
     assert rec.feedback is None
 
 
@@ -83,9 +64,7 @@ async def test_get_by_id_returns_none_for_missing(db_session):
 
 async def test_get_by_user_with_feedback_empty(db_session):
     user = await _create_user(db_session)
-    repo = RecommendationRepository(db_session)
-
-    rows = await repo.get_by_user_with_feedback(user.id)
+    rows = await RecommendationRepository(db_session).get_by_user_with_feedback(user.id)
     assert rows == []
 
 

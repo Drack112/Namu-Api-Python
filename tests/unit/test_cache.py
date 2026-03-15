@@ -33,24 +33,16 @@ async def test_cache_get_returns_dict_on_hit():
 async def test_cache_get_swallows_redis_error_and_returns_none():
     client = _redis(get_error=Exception("Redis down"))
     with patch("app.infra.cache._get_client", return_value=client):
-        # graceful degradation — returns None instead of raising
         assert await cache_get("user:1") is None
 
 
-async def test_cache_set_calls_setex_with_correct_key_and_ttl():
+async def test_cache_set_stores_key_ttl_and_serialized_value():
     client = _redis()
     with patch("app.infra.cache._get_client", return_value=client):
-        await cache_set("user:1", {"id": 1}, ttl=120)
-    key, ttl, _ = client.setex.call_args.args
+        await cache_set("user:1", {"id": 1, "name": "Ana"}, ttl=120)
+    key, ttl, raw = client.setex.call_args.args
     assert key == "user:1"
     assert ttl == 120
-
-
-async def test_cache_set_serializes_value_as_json():
-    client = _redis()
-    with patch("app.infra.cache._get_client", return_value=client):
-        await cache_set("user:1", {"id": 1, "name": "Ana"})
-    _, _, raw = client.setex.call_args.args
     assert json.loads(raw) == {"id": 1, "name": "Ana"}
 
 
