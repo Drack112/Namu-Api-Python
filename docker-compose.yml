@@ -13,7 +13,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./seed.sql:/docker-entrypoint-initdb.d/seed.sql
     tmpfs:
-      - /var/lib/postgresql/data/tmp
+      - /tmp
     healthcheck:
       test:
         ["CMD-SHELL", "pg_isready -U ${DB_USER:-namu} -d ${DB_NAME:-namu_ai}"]
