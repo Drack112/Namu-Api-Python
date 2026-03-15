@@ -1,0 +1,539 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-03-15T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v9.3.0",
+  "resources": [
+
+    {
+      "_id": "wrk_namu_ai",
+      "_type": "workspace",
+      "name": "Namu AI Wellness API",
+      "description": "Test collection for the Namu AI Wellness REST API.",
+      "scope": "collection"
+    },
+
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_namu_ai",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8000",
+        "user_id": 1,
+        "recommendation_id": 1
+      },
+      "isPrivate": false
+    },
+    {
+      "_id": "env_prod",
+      "_type": "environment",
+      "parentId": "env_base",
+      "name": "Production",
+      "data": {
+        "base_url": "https://your-production-url.com"
+      },
+      "color": "#2196F3",
+      "isPrivate": false
+    },
+
+    {
+      "_id": "fld_health",
+      "_type": "request_group",
+      "parentId": "wrk_namu_ai",
+      "name": "Health",
+      "metaSortKey": -10000
+    },
+    {
+      "_id": "fld_users",
+      "_type": "request_group",
+      "parentId": "wrk_namu_ai",
+      "name": "Users",
+      "metaSortKey": -9000
+    },
+    {
+      "_id": "fld_recommendations",
+      "_type": "request_group",
+      "parentId": "wrk_namu_ai",
+      "name": "Recommendations",
+      "metaSortKey": -7000
+    },
+    {
+      "_id": "fld_feedback",
+      "_type": "request_group",
+      "parentId": "wrk_namu_ai",
+      "name": "Feedback",
+      "metaSortKey": -5000
+    },
+
+    {
+      "_id": "req_health",
+      "_type": "request",
+      "parentId": "fld_health",
+      "name": "Health Check",
+      "method": "GET",
+      "url": "{{ _.base_url }}/health",
+      "headers": [],
+      "body": {},
+      "metaSortKey": -10000
+    },
+
+    {
+      "_id": "req_create_user_ana",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Create User — Iniciante (Ana)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users/",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Ana Costa\",\n  \"age\": 28,\n  \"goals\": [\"reduzir estresse\", \"melhorar sono\"],\n  \"restrictions\": null,\n  \"experience_level\": \"iniciante\"\n}"
+      },
+      "metaSortKey": -9900
+    },
+    {
+      "_id": "req_create_user_bruno",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Create User — Intermediário c/ restrição (Bruno)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users/",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Bruno Lima\",\n  \"age\": 45,\n  \"goals\": [\"perder peso\", \"melhorar condicionamento\"],\n  \"restrictions\": \"Problemas no joelho direito, evitar impacto\",\n  \"experience_level\": \"intermediário\"\n}"
+      },
+      "metaSortKey": -9800
+    },
+    {
+      "_id": "req_create_user_carla",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Create User — Gestante (Carla)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users/",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Carla Mendes\",\n  \"age\": 35,\n  \"goals\": [\"ganhar flexibilidade\", \"reduzir ansiedade\"],\n  \"restrictions\": \"Gestante - 5 meses\",\n  \"experience_level\": \"intermediário\"\n}"
+      },
+      "metaSortKey": -9700
+    },
+    {
+      "_id": "req_create_user_diego",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Create User — Avançado (Diego)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users/",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Diego Ferreira\",\n  \"age\": 22,\n  \"goals\": [\"ganhar massa muscular\", \"melhorar foco\"],\n  \"restrictions\": \"Intolerância a lactose\",\n  \"experience_level\": \"avançado\"\n}"
+      },
+      "metaSortKey": -9600
+    },
+    {
+      "_id": "req_create_user_elena",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Create User — Idosa c/ condições múltiplas (Elena)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users/",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Elena Souza\",\n  \"age\": 60,\n  \"goals\": [\"manter mobilidade\", \"melhorar equilíbrio\", \"reduzir dores\"],\n  \"restrictions\": \"Artrite nas mãos, hipertensão controlada\",\n  \"experience_level\": \"iniciante\"\n}"
+      },
+      "metaSortKey": -9500
+    },
+    {
+      "_id": "req_get_user_1",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Get User — ID 1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/users/1",
+      "headers": [],
+      "body": {},
+      "metaSortKey": -9400
+    },
+    {
+      "_id": "req_get_user_2",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Get User — ID 2",
+      "method": "GET",
+      "url": "{{ _.base_url }}/users/2",
+      "headers": [],
+      "body": {},
+      "metaSortKey": -9300
+    },
+    {
+      "_id": "req_get_user_var",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Get User — por variável",
+      "method": "GET",
+      "url": "{{ _.base_url }}/users/{{ _.user_id }}",
+      "headers": [],
+      "body": {},
+      "metaSortKey": -9200
+    },
+    {
+      "_id": "req_get_history_1",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Get Recommendation History — User 1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/users/1/recommendations",
+      "headers": [],
+      "body": {},
+      "metaSortKey": -9100
+    },
+    {
+      "_id": "req_get_history_2",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Get Recommendation History — User 2",
+      "method": "GET",
+      "url": "{{ _.base_url }}/users/2/recommendations",
+      "headers": [],
+      "body": {},
+      "metaSortKey": -9000
+    },
+    {
+      "_id": "req_create_user_missing_name",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Create User — campo name ausente (422)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users/",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"age\": 28,\n  \"goals\": [\"saúde geral\"],\n  \"restrictions\": null,\n  \"experience_level\": \"iniciante\"\n}"
+      },
+      "metaSortKey": -8900
+    },
+    {
+      "_id": "req_create_user_age_zero",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Create User — age: 0, viola ge=1 (422)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users/",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Teste\",\n  \"age\": 0,\n  \"goals\": [\"saúde\"],\n  \"restrictions\": null,\n  \"experience_level\": \"iniciante\"\n}"
+      },
+      "metaSortKey": -8800
+    },
+    {
+      "_id": "req_create_user_age_over",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Create User — age: 121, viola le=120 (422)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users/",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Teste\",\n  \"age\": 121,\n  \"goals\": [\"saúde\"],\n  \"restrictions\": null,\n  \"experience_level\": \"iniciante\"\n}"
+      },
+      "metaSortKey": -8700
+    },
+    {
+      "_id": "req_create_user_empty_goals",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Create User — goals vazio (422)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users/",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Teste\",\n  \"age\": 25,\n  \"goals\": [],\n  \"restrictions\": null,\n  \"experience_level\": \"iniciante\"\n}"
+      },
+      "metaSortKey": -8600
+    },
+    {
+      "_id": "req_create_user_invalid_level",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Create User — experience_level inválido (422)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users/",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Teste\",\n  \"age\": 25,\n  \"goals\": [\"saúde\"],\n  \"restrictions\": null,\n  \"experience_level\": \"expert\"\n}"
+      },
+      "metaSortKey": -8500
+    },
+    {
+      "_id": "req_get_user_not_found",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Get User — não encontrado (404)",
+      "method": "GET",
+      "url": "{{ _.base_url }}/users/99999",
+      "headers": [],
+      "body": {},
+      "metaSortKey": -8400
+    },
+    {
+      "_id": "req_get_history_not_found",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "Get Recommendation History — usuário não encontrado (404)",
+      "method": "GET",
+      "url": "{{ _.base_url }}/users/99999/recommendations",
+      "headers": [],
+      "body": {},
+      "metaSortKey": -8300
+    },
+
+    {
+      "_id": "req_rec_no_context",
+      "_type": "request",
+      "parentId": "fld_recommendations",
+      "name": "Create Recommendation — sem contexto (User 1)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"user_id\": 1,\n  \"context\": null\n}"
+      },
+      "metaSortKey": -7900
+    },
+    {
+      "_id": "req_rec_back_pain",
+      "_type": "request",
+      "parentId": "fld_recommendations",
+      "name": "Create Recommendation — dor nas costas (User 2)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"user_id\": 2,\n  \"context\": \"tenho dor nas costas hoje e prefiro atividades leves\"\n}"
+      },
+      "metaSortKey": -7800
+    },
+    {
+      "_id": "req_rec_gestante",
+      "_type": "request",
+      "parentId": "fld_recommendations",
+      "name": "Create Recommendation — gestante (User 3)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"user_id\": 3,\n  \"context\": \"quero manter a atividade física durante a gravidez de forma segura\"\n}"
+      },
+      "metaSortKey": -7700
+    },
+    {
+      "_id": "req_rec_alta_energia",
+      "_type": "request",
+      "parentId": "fld_recommendations",
+      "name": "Create Recommendation — alta energia (User 4)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"user_id\": 4,\n  \"context\": \"me sinto com muita energia hoje, quero um treino intenso\"\n}"
+      },
+      "metaSortKey": -7600
+    },
+    {
+      "_id": "req_rec_idoso",
+      "_type": "request",
+      "parentId": "fld_recommendations",
+      "name": "Create Recommendation — idosa c/ hipertensão (User 5)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"user_id\": 5,\n  \"context\": null\n}"
+      },
+      "metaSortKey": -7500
+    },
+    {
+      "_id": "req_rec_poco_tempo",
+      "_type": "request",
+      "parentId": "fld_recommendations",
+      "name": "Create Recommendation — pouco tempo (User 1)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"user_id\": 1,\n  \"context\": \"tenho apenas 20 minutos disponíveis hoje\"\n}"
+      },
+      "metaSortKey": -7400
+    },
+    {
+      "_id": "req_rec_user_not_found",
+      "_type": "request",
+      "parentId": "fld_recommendations",
+      "name": "Create Recommendation — usuário não encontrado (404)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"user_id\": 99999,\n  \"context\": null\n}"
+      },
+      "metaSortKey": -7300
+    },
+    {
+      "_id": "req_rec_missing_user_id",
+      "_type": "request",
+      "parentId": "fld_recommendations",
+      "name": "Create Recommendation — user_id ausente (422)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"context\": \"sem user_id\"\n}"
+      },
+      "metaSortKey": -7200
+    },
+    {
+      "_id": "req_rec_empty_body",
+      "_type": "request",
+      "parentId": "fld_recommendations",
+      "name": "Create Recommendation — body vazio (422)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "metaSortKey": -7100
+    },
+
+    {
+      "_id": "req_fb_5_stars",
+      "_type": "request",
+      "parentId": "fld_feedback",
+      "name": "Submit Feedback — 5 estrelas",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations/{{ _.recommendation_id }}/feedback",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"rating\": 5,\n  \"comment\": \"Excelente recomendação! As atividades foram perfeitas para o meu nível.\"\n}"
+      },
+      "metaSortKey": -5900
+    },
+    {
+      "_id": "req_fb_4_no_comment",
+      "_type": "request",
+      "parentId": "fld_feedback",
+      "name": "Submit Feedback — 4 estrelas sem comentário",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations/{{ _.recommendation_id }}/feedback",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"rating\": 4,\n  \"comment\": null\n}"
+      },
+      "metaSortKey": -5800
+    },
+    {
+      "_id": "req_fb_1_star",
+      "_type": "request",
+      "parentId": "fld_feedback",
+      "name": "Submit Feedback — 1 estrela",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations/{{ _.recommendation_id }}/feedback",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"rating\": 1,\n  \"comment\": \"A recomendação não considerou minha restrição no joelho.\"\n}"
+      },
+      "metaSortKey": -5700
+    },
+    {
+      "_id": "req_fb_duplicate",
+      "_type": "request",
+      "parentId": "fld_feedback",
+      "name": "Submit Feedback — duplicado (409)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations/{{ _.recommendation_id }}/feedback",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"rating\": 2,\n  \"comment\": \"Deve falhar com 409.\"\n}"
+      },
+      "metaSortKey": -5600
+    },
+    {
+      "_id": "req_fb_not_found",
+      "_type": "request",
+      "parentId": "fld_feedback",
+      "name": "Submit Feedback — recomendação não encontrada (404)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations/99999/feedback",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"rating\": 3,\n  \"comment\": null\n}"
+      },
+      "metaSortKey": -5500
+    },
+    {
+      "_id": "req_fb_rating_above",
+      "_type": "request",
+      "parentId": "fld_feedback",
+      "name": "Submit Feedback — rating: 10, viola le=5 (422)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations/{{ _.recommendation_id }}/feedback",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"rating\": 10,\n  \"comment\": null\n}"
+      },
+      "metaSortKey": -5400
+    },
+    {
+      "_id": "req_fb_rating_below",
+      "_type": "request",
+      "parentId": "fld_feedback",
+      "name": "Submit Feedback — rating: 0, viola ge=1 (422)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations/{{ _.recommendation_id }}/feedback",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"rating\": 0,\n  \"comment\": null\n}"
+      },
+      "metaSortKey": -5300
+    },
+    {
+      "_id": "req_fb_missing_rating",
+      "_type": "request",
+      "parentId": "fld_feedback",
+      "name": "Submit Feedback — rating ausente (422)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/recommendations/{{ _.recommendation_id }}/feedback",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"comment\": \"sem rating\"\n}"
+      },
+      "metaSortKey": -5200
+    }
+  ]
+}
