@@ -52,8 +52,9 @@ async def test_recommendation_created_posts_correct_payload():
 
 async def test_feedback_submitted_posts_correct_payload():
     cm, client = _mock_client()
-    with _patch_settings("http://hook.test/events"), patch(
-        "app.infra.webhook.httpx.AsyncClient", return_value=cm
+    with (
+        _patch_settings("http://hook.test/events"),
+        patch("app.infra.webhook.httpx.AsyncClient", return_value=cm),
     ):
         await notify_feedback_submitted(10, 42, 5)
     payload = client.post.call_args.kwargs["json"]
@@ -70,7 +71,8 @@ async def test_feedback_submitted_posts_correct_payload():
 async def test_errors_are_swallowed(exc):
     cm, client = _mock_client()
     client.post.side_effect = exc
-    with _patch_settings("http://hook.test/events"), patch(
-        "app.infra.webhook.httpx.AsyncClient", return_value=cm
+    with (
+        _patch_settings("http://hook.test/events"),
+        patch("app.infra.webhook.httpx.AsyncClient", return_value=cm),
     ):
         await notify_recommendation_created(1, 1)  # must not raise

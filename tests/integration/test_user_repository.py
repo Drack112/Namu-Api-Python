@@ -53,6 +53,8 @@ async def test_create_user_with_restrictions(db_session):
 
 async def test_create_user_with_multiple_goals(db_session):
     repo = UserRepository(db_session)
-    user = await repo.create({**_USER_DATA, "goals": ["perder peso", "melhorar sono", "reduzir estresse"]})
+    user = await repo.create(
+        {**_USER_DATA, "goals": ["perder peso", "melhorar sono", "reduzir estresse"]}
+    )
     assert len(user.goals) == 3
     assert "perder peso" in user.goals

@@ -99,8 +99,14 @@ async def test_context_returned_with_empty_preferred_when_enough_rows():
 @pytest.mark.parametrize(
     "rows",
     [
-        [{"activities": [{"category": ""}], "rating": 5}, {"activities": [{"category": ""}], "rating": 5}],
-        [{"activities": [{"name": "Exercício"}], "rating": 5}, {"activities": [{"name": "Outro"}], "rating": 5}],
+        [
+            {"activities": [{"category": ""}], "rating": 5},
+            {"activities": [{"category": ""}], "rating": 5},
+        ],
+        [
+            {"activities": [{"name": "Exercício"}], "rating": 5},
+            {"activities": [{"name": "Outro"}], "rating": 5},
+        ],
         [{"activities": None, "rating": 5}, {"activities": None, "rating": 4}],
     ],
 )
